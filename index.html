@@ -150,9 +150,10 @@
     </div>
 
     <script type="module">
+        // Import các thư viện dùng cho Realtime Database
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         // Mảng chứa thông tin cơ bản của các thành viên
         const membersData = [
@@ -169,33 +170,19 @@
             { id: 'hoanglinh', name: 'Hoàng Linh', color: 'c1f0c1', seed: 'HoangLinh' }
         ];
 
-        // Lấy cấu hình Firebase. Ưu tiên cấu hình do hệ thống tự động cấp (__firebase_config).
-        // Nếu không có, dùng cấu hình tĩnh do user cung cấp (Lưu ý: Dùng cấu hình tĩnh này có thể gặp lỗi nếu quy tắc bảo mật không cho phép).
-        let firebaseConfig;
-        try {
-            if (typeof __firebase_config !== 'undefined') {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } else {
-                console.warn("Không tìm thấy biến môi trường __firebase_config. Sử dụng cấu hình dự phòng.");
-                firebaseConfig = {
-                    apiKey: "AIzaSyBuzvjXec8SR_h3v8Zrrt5JEoJAsildSVM",
-                    authDomain: "to4manhthi.firebaseapp.com",
-                    projectId: "to4manhthi",
-                    storageBucket: "to4manhthi.firebasestorage.app",
-                    messagingSenderId: "368529734039",
-                    appId: "1:368529734039:web:8f311653c72c08a27cacd2",
-                    measurementId: "G-2RXMXNT8HE"
-                };
-            }
-        } catch (e) {
-            console.error("Lỗi khi đọc cấu hình Firebase:", e);
-            alert("Lỗi cấu hình hệ thống. Vui lòng thử lại sau.");
-        }
+        // Cấu hình Firebase của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuzvjXec8SR_h3v8Zrrt5JEoJAsildSVM",
+            authDomain: "to4manhthi.firebaseapp.com",
+            // QUAN TRỌNG: Bạn cần thêm dòng databaseURL này vào để Realtime Database hoạt động
+            databaseURL: "https://to4manhthi-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "to4manhthi",
+            storageBucket: "to4manhthi.firebasestorage.app",
+            messagingSenderId: "368529734039",
+            appId: "1:368529734039:web:8f311653c72c08a27cacd2",
+            measurementId: "G-2RXMXNT8HE"
+        };
         
-        // Lấy App ID từ biến môi trường, bắt buộc phải dùng chuẩn này để lưu dữ liệu
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to4-memory-app';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
         let db, auth, currentUser;
         const gridContainer = document.getElementById('members-grid');
         const loader = document.getElementById('global-loader');
@@ -222,12 +209,12 @@
                 card.className = "bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100";
                 card.innerHTML = `
                     <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100" data-id="${member.id}">
-                        <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-300 z-10">
                             <i class="fa-solid fa-spinner fa-spin text-2xl hidden loading-icon"></i>
                         </div>
-                        <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10 bg-white">
+                        <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-20 bg-white">
                         
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
                             <div class="text-center">
                                 <i class="fa-solid fa-cloud-arrow-up text-white text-3xl mb-1"></i>
                                 <p class="text-white text-xs font-medium px-2">Đổi ảnh</p>
@@ -242,37 +229,22 @@
             attachClickEvents();
         }
 
-        // Khởi tạo ứng dụng và kết nối CSDL
+        // Khởi tạo ứng dụng và kết nối Realtime Database
         async function initApp() {
             renderGrid();
             
             try {
-                if (!firebaseConfig || !firebaseConfig.apiKey) {
-                     throw new Error("Cấu hình Firebase không hợp lệ.");
-                }
-
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                db = getFirestore(app);
+                // Khởi tạo Realtime Database thay vì Firestore
+                db = getDatabase(app);
 
-                // QUAN TRỌNG: Quy tắc bảo mật số 3 - Bắt buộc dùng token nếu có
-                try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (authError) {
-                     console.error("Lỗi xác thực (Authentication):", authError);
-                     throw new Error("Không thể xác thực quyền truy cập: " + authError.message);
-                }
-                
+                // Đăng nhập ẩn danh
+                await signInAnonymously(auth);
                 currentUser = auth.currentUser;
                 
                 if (currentUser) {
-                    startSync(); // Lắng nghe thay đổi từ Firestore
-                } else {
-                    throw new Error("Không thể lấy thông tin người dùng sau khi xác thực.");
+                    startSync(); // Lắng nghe thay đổi
                 }
 
                 // Ẩn loading
@@ -280,37 +252,49 @@
                 setTimeout(() => loader.style.display = 'none', 500);
 
             } catch (error) {
-                console.error("Lỗi khởi tạo Firebase toàn cục:", error);
-                showToast(`Lỗi hệ thống: ${error.message}`, true);
-                // Giữ nguyên loader hoặc hiển thị thông báo lỗi rõ hơn trên giao diện
-                loader.innerHTML = `<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i><p class="text-gray-800 font-bold text-xl">Đã xảy ra lỗi kết nối!</p><p class="text-gray-600 mt-2 max-w-sm mx-auto">${error.message}</p></div>`;
+                console.error("Lỗi khởi tạo Firebase:", error);
+                
+                let errorMsg = error.message;
+                if(error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                    errorMsg = "Chưa bật chế độ Đăng nhập Ẩn danh (Anonymous) trong Authentication.";
+                }
+
+                loader.innerHTML = `
+                    <div class="text-center p-6 bg-white rounded-xl shadow-xl max-w-md mx-4 border-t-4 border-red-500">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
+                        <p class="text-gray-800 font-bold text-xl mb-2">Đã xảy ra lỗi kết nối!</p>
+                        <p class="text-gray-600 text-sm break-words">${errorMsg}</p>
+                        <button onclick="location.reload()" class="mt-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-100 transition-colors">Tải lại trang</button>
+                    </div>`;
             }
         }
 
-        // Lắng nghe dữ liệu (Public data)
+        // Lắng nghe dữ liệu (Realtime)
         function startSync() {
-            // QUAN TRỌNG: Quy tắc bảo mật số 1 - Phải dùng đúng đường dẫn
-            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'members_avatars');
+            // Tham chiếu đến nhánh 'avatars' trong Realtime Database
+            const avatarsRef = ref(db, 'avatars');
             
-            onSnapshot(collectionRef, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added" || change.type === "modified") {
-                        const memberId = change.doc.id;
-                        const data = change.doc.data();
-                        const imgElement = document.getElementById(`img-${memberId}`);
-                        if (imgElement && data.imageUrl) {
-                            imgElement.src = data.imageUrl; // Cập nhật ảnh thật
+            // onValue sẽ tự động chạy mỗi khi có dữ liệu mới trên server
+            onValue(avatarsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Lặp qua tất cả dữ liệu lấy về
+                    for (const memberId in data) {
+                        if (data.hasOwnProperty(memberId)) {
+                            const imgData = data[memberId];
+                            const imgElement = document.getElementById(`img-${memberId}`);
+                            if (imgElement && imgData.imageUrl) {
+                                imgElement.src = imgData.imageUrl; // Cập nhật ảnh thật lên giao diện
+                            }
                         }
                     }
-                });
+                }
             }, (error) => {
-                console.error("Lỗi đồng bộ dữ liệu Firestore (onSnapshot):", error);
-                
-                // Phân tích lỗi thường gặp
-                if (error.code === 'permission-denied') {
-                    showToast("Lỗi: Không có quyền truy cập dữ liệu (Permission Denied). Hãy kiểm tra Firebase Security Rules.", true);
+                console.error("Lỗi khi đọc dữ liệu:", error);
+                if(error.message.includes("permission_denied")) {
+                    showToast("Lỗi: Hãy đổi file Rules của Realtime Database thành true.", true);
                 } else {
-                    showToast(`Có lỗi đồng bộ dữ liệu: ${error.message}`, true);
+                    showToast("Lỗi đồng bộ: " + error.message, true);
                 }
             });
         }
@@ -324,7 +308,7 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 400; // Nén nhỏ để web tải nhanh
+                    const MAX_SIZE = 400; // Nén nhỏ lại
                     let width = img.width;
                     let height = img.height;
                     
@@ -338,6 +322,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
                     
+                    // Nén ra base64 dạng JPEG chất lượng 60%
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
                     callback(dataUrl);
                 }
@@ -382,20 +367,20 @@
 
             compressImage(file, async (compressedBase64) => {
                 try {
-                    // QUAN TRỌNG: Quy tắc bảo mật số 1 - Phải dùng đúng đường dẫn lưu
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members_avatars', currentUploadingId);
+                    // Tham chiếu chính xác đến ID của người dùng trong thư mục avatars
+                    const memberRef = ref(db, 'avatars/' + currentUploadingId);
                     
-                    // Lưu dữ liệu vào Cloud
-                    await setDoc(docRef, {
+                    // Lưu dữ liệu bằng lệnh set() của Realtime Database
+                    await set(memberRef, {
                         imageUrl: compressedBase64,
                         updatedAt: new Date().toISOString(),
-                        uploaderId: currentUser.uid // Lưu lại ai là người up
+                        uploaderId: currentUser.uid
                     });
                     
                     showToast("Đã lưu ảnh thành công!");
                 } catch (error) {
-                    console.error("Lỗi khi lưu tài liệu lên Firestore:", error);
-                    showToast("Có lỗi xảy ra khi lưu ảnh.", true);
+                    console.error("Lỗi khi lưu ảnh:", error);
+                    showToast("Có lỗi xảy ra: " + error.message, true);
                 } finally {
                     loadingIcon.classList.add('hidden');
                     imgElement.classList.remove('opacity-50');
