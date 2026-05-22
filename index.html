@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tri Ân Tổ 4 - Kỷ Niệm Khó Quên</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome cho Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        cursive: ['Dancing Script', 'cursive'],
+                    },
+                    colors: {
+                        primary: '#ff7e5f',
+                        secondary: '#feb47b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            border-bottom-left-radius: 50% 10%;
+            border-bottom-right-radius: 50% 10%;
+        }
+        
+        /* Hiệu ứng thả tim bay lên */
+        .heart-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            background: #ff4757;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+            transition: transform 0.2s;
+        }
+        .heart-float:active {
+            transform: scale(0.9);
+        }
+        .floating-heart {
+            position: fixed;
+            color: #ff4757;
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatUp 2s ease-in forwards;
+            z-index: 40;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.5) rotate(20deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased font-sans">
+
+    <!-- Hero Section -->
+    <header class="hero-bg text-white pt-20 pb-24 px-4 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        
+        <div class="max-w-4xl mx-auto relative z-10">
+            <h1 class="font-cursive text-6xl md:text-7xl mb-4 drop-shadow-lg">Tổ 4 Yêu Thương</h1>
+            <p class="text-xl md:text-2xl font-medium mb-6 opacity-90 max-w-2xl mx-auto">
+                "Thanh xuân như một cơn mưa rào... Cảm ơn vì chúng ta đã cùng nhau che chung một chiếc ô mang tên Tổ 4."
+            </p>
+            <div class="inline-block bg-white/20 backdrop-blur-md rounded-full px-5 py-2 text-sm text-white/90 border border-white/30">
+                <i class="fa-solid fa-camera mr-2"></i> Nhấn vào ảnh để tải lên hình của bạn nhé!
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content - Members Photo Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 pb-24 relative z-20">
+        
+        <!-- Grid layout tối giản chỉ chứa ảnh và tên - Chứa 11 thành viên -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 pt-8">
+            
+            <!-- Thành viên 1: Ngọc Anh -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=NgocAnh&backgroundColor=ffd5dc" alt="Ngọc Anh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <!-- Overlay hiển thị icon máy ảnh khi hover -->
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Ngọc Anh</h3>
+            </div>
+
+            <!-- Thành viên 2: Thương -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Thuong&backgroundColor=b6e3f4" alt="Thương" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Thương</h3>
+            </div>
+
+            <!-- Thành viên 3: My -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=My&backgroundColor=c0aede" alt="My" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">My</h3>
+            </div>
+
+            <!-- Thành viên 4: Phúc -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Phuc&backgroundColor=d1d4f9" alt="Phúc" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Phúc</h3>
+            </div>
+
+            <!-- Thành viên 5: Thái -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Thai&backgroundColor=b0eec0" alt="Thái" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Thái</h3>
+            </div>
+
+            <!-- Thành viên 6: Dương -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Duong&backgroundColor=fce0a2" alt="Dương" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Dương</h3>
+            </div>
+
+            <!-- Thành viên 7: Phi -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Phi&backgroundColor=ffdfbf" alt="Phi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Phi</h3>
+            </div>
+
+            <!-- Thành viên 8: Quỳnh -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Quynh&backgroundColor=eebbff" alt="Quỳnh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Quỳnh</h3>
+            </div>
+
+            <!-- Thành viên 9: Hải Anh -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=HaiAnh&backgroundColor=a0c4ff" alt="Hải Anh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Hải Anh</h3>
+            </div>
+
+            <!-- Thành viên 10: Trang -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Trang&backgroundColor=ffc6ff" alt="Trang" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Trang</h3>
+            </div>
+
+            <!-- Thành viên 11: Hoàng Linh -->
+            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
+                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=HoangLinh&backgroundColor=c1f0c1" alt="Hoàng Linh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Hoàng Linh</h3>
+            </div>
+
+        </div>
+
+        <!-- Lời nhắn nhủ chung -->
+        <div class="mt-16 bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-md border border-white text-center">
+            <h2 class="font-cursive text-4xl text-primary mb-4">Gửi trọn tình cảm...</h2>
+            <p class="text-gray-600 leading-relaxed max-w-3xl mx-auto text-lg">
+                11 cá tính khác nhau nhưng khi ghép lại tạo thành một mảnh ghép hoàn hảo mang tên "Tổ 4". Mong rằng những tháng ngày làm việc nhóm, những tiếng cười và cả những đêm thức trắng chạy deadline sẽ luôn là những kỷ niệm vô giá trong tim mỗi người.
+            </p>
+            <p class="mt-4 font-bold text-gray-800 text-xl">Mãi đỉnh Tổ 4 nhé! ❤️</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center">
+        <p>Được tạo ra với rất nhiều <i class="fa-solid fa-heart text-red-500 mx-1"></i> dành riêng cho Tổ 4</p>
+    </footer>
+
+    <!-- Nút tương tác thả tim -->
+    <button class="heart-float" id="btnHeart" title="Gửi ngàn tim cho Tổ 4">
+        <i class="fa-solid fa-heart"></i>
+    </button>
+
+    <!-- Thẻ Input ẩn để xử lý việc chọn file ảnh -->
+    <input type="file" id="imageUploader" accept="image/*" class="hidden">
+
+    <script>
+        // --- CHỨC NĂNG THẢ TIM ---
+        document.getElementById('btnHeart').addEventListener('click', function(e) {
+            const heart = document.createElement('i');
+            heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
+            
+            const rect = this.getBoundingClientRect();
+            const offsetX = (Math.random() - 0.5) * 40;
+            const startX = rect.left + (rect.width / 2) + offsetX;
+            const startY = rect.top;
+            
+            heart.style.left = startX + 'px';
+            heart.style.top = startY + 'px';
+            
+            const scale = Math.random() * 0.5 + 0.8;
+            heart.style.transform = `scale(${scale})`;
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 2000);
+        });
+
+        // --- CHỨC NĂNG UPLOAD ẢNH CÁ NHÂN ---
+        const imageUploader = document.getElementById('imageUploader');
+        let currentImageElement = null;
+
+        // Bắt sự kiện click vào các khung ảnh
+        document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('click', function() {
+                // Lưu lại thẻ <img> đang được click
+                currentImageElement = this.querySelector('img');
+                // Kích hoạt nút chọn file ẩn
+                imageUploader.click();
+            });
+        });
+
+        // Xử lý khi người dùng đã chọn file ảnh xong
+        imageUploader.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentImageElement) {
+                // Sử dụng FileReader để đọc file ảnh từ máy tính thành URL
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Thay thế ảnh hiện tại bằng ảnh vừa tải lên
+                    currentImageElement.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+            // Reset input để có thể chọn lại cùng 1 file nếu cần
+            this.value = '';
+        });
+    </script>
+</body>
+</html>
