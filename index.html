@@ -38,6 +38,15 @@
             border-bottom-right-radius: 50% 10%;
         }
         
+        /* Hiệu ứng load ảnh */
+        .img-loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+
         /* Hiệu ứng thả tim bay lên */
         .heart-float {
             position: fixed;
@@ -72,9 +81,20 @@
             0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
             100% { transform: translateY(-200px) scale(1.5) rotate(20deg); opacity: 0; }
         }
+
+        /* Loading Overlay */
+        #global-loader {
+            transition: opacity 0.5s ease;
+        }
     </style>
 </head>
 <body class="text-gray-800 antialiased font-sans">
+
+    <!-- Loading Screen khi đang kết nối server -->
+    <div id="global-loader" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center">
+        <i class="fa-solid fa-spinner fa-spin text-primary text-5xl mb-4"></i>
+        <p class="text-gray-600 font-medium">Đang kết nối dữ liệu Tổ 4...</p>
+    </div>
 
     <!-- Hero Section -->
     <header class="hero-bg text-white pt-20 pb-24 px-4 text-center relative overflow-hidden">
@@ -86,7 +106,7 @@
                 "Thanh xuân như một cơn mưa rào... Cảm ơn vì chúng ta đã cùng nhau che chung một chiếc ô mang tên Tổ 4."
             </p>
             <div class="inline-block bg-white/20 backdrop-blur-md rounded-full px-5 py-2 text-sm text-white/90 border border-white/30">
-                <i class="fa-solid fa-camera mr-2"></i> Nhấn vào ảnh để tải lên hình của bạn nhé!
+                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Chạm vào khung ảnh để cập nhật hình của bạn (Lưu online)
             </div>
         </div>
     </header>
@@ -94,131 +114,9 @@
     <!-- Main Content - Members Photo Grid -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 pb-24 relative z-20">
         
-        <!-- Grid layout tối giản chỉ chứa ảnh và tên - Chứa 11 thành viên -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 pt-8">
-            
-            <!-- Thành viên 1: Ngọc Anh -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=NgocAnh&backgroundColor=ffd5dc" alt="Ngọc Anh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <!-- Overlay hiển thị icon máy ảnh khi hover -->
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Ngọc Anh</h3>
-            </div>
-
-            <!-- Thành viên 2: Thương -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Thuong&backgroundColor=b6e3f4" alt="Thương" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Thương</h3>
-            </div>
-
-            <!-- Thành viên 3: My -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=My&backgroundColor=c0aede" alt="My" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">My</h3>
-            </div>
-
-            <!-- Thành viên 4: Phúc -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Phuc&backgroundColor=d1d4f9" alt="Phúc" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Phúc</h3>
-            </div>
-
-            <!-- Thành viên 5: Thái -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Thai&backgroundColor=b0eec0" alt="Thái" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Thái</h3>
-            </div>
-
-            <!-- Thành viên 6: Dương -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Duong&backgroundColor=fce0a2" alt="Dương" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Dương</h3>
-            </div>
-
-            <!-- Thành viên 7: Phi -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Phi&backgroundColor=ffdfbf" alt="Phi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Phi</h3>
-            </div>
-
-            <!-- Thành viên 8: Quỳnh -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Quynh&backgroundColor=eebbff" alt="Quỳnh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Quỳnh</h3>
-            </div>
-
-            <!-- Thành viên 9: Hải Anh -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=HaiAnh&backgroundColor=a0c4ff" alt="Hải Anh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Hải Anh</h3>
-            </div>
-
-            <!-- Thành viên 10: Trang -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Trang&backgroundColor=ffc6ff" alt="Trang" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Trang</h3>
-            </div>
-
-            <!-- Thành viên 11: Hoàng Linh -->
-            <div class="bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100">
-                <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=HoangLinh&backgroundColor=c1f0c1" alt="Hoàng Linh" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <i class="fa-solid fa-cloud-arrow-up text-white text-3xl"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">Hoàng Linh</h3>
-            </div>
-
+        <!-- Container để JS đổ dữ liệu vào -->
+        <div id="members-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 pt-8">
+            <!-- Render by JS -->
         </div>
 
         <!-- Lời nhắn nhủ chung -->
@@ -243,61 +141,274 @@
     </button>
 
     <!-- Thẻ Input ẩn để xử lý việc chọn file ảnh -->
-    <input type="file" id="imageUploader" accept="image/*" class="hidden">
+    <input type="file" id="imageUploader" accept="image/png, image/jpeg, image/jpg" class="hidden">
 
-    <script>
-        // --- CHỨC NĂNG THẢ TIM ---
+    <!-- Thông báo tùy chỉnh -->
+    <div id="toast-message" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 transition-opacity duration-300 opacity-0 pointer-events-none flex items-center">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 mr-2"></i>
+        <span id="toast-text">Thành công!</span>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- CẤU HÌNH DỮ LIỆU THÀNH VIÊN ---
+        const membersData = [
+            { id: 'ngocanh', name: 'Ngọc Anh', color: 'ffd5dc', seed: 'NgocAnh' },
+            { id: 'thuong', name: 'Thương', color: 'b6e3f4', seed: 'Thuong' },
+            { id: 'my', name: 'My', color: 'c0aede', seed: 'My' },
+            { id: 'phuc', name: 'Phúc', color: 'd1d4f9', seed: 'Phuc' },
+            { id: 'thai', name: 'Thái', color: 'b0eec0', seed: 'Thai' },
+            { id: 'duong', name: 'Dương', color: 'fce0a2', seed: 'Duong' },
+            { id: 'phi', name: 'Phi', color: 'ffdfbf', seed: 'Phi' },
+            { id: 'quynh', name: 'Quỳnh', color: 'eebbff', seed: 'Quynh' },
+            { id: 'haianh', name: 'Hải Anh', color: 'a0c4ff', seed: 'HaiAnh' },
+            { id: 'trang', name: 'Trang', color: 'ffc6ff', seed: 'Trang' },
+            { id: 'hoanglinh', name: 'Hoàng Linh', color: 'c1f0c1', seed: 'HoangLinh' }
+        ];
+
+        // Môi trường Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to4-gallery-app';
+        let firebaseConfig = null;
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+                // Dummy config to prevent crash if running outside specific environment
+                apiKey: "dummy", authDomain: "dummy", projectId: "dummy"
+            };
+        } catch(e) { console.error("Firebase config error", e); }
+        
+        let db, auth, currentUser;
+        const gridContainer = document.getElementById('members-grid');
+        const loader = document.getElementById('global-loader');
+
+        // Hàm hiển thị thông báo
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-message');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-text');
+            
+            text.textContent = message;
+            if (isError) {
+                icon.className = "fa-solid fa-circle-exclamation text-red-400 mr-2";
+            } else {
+                icon.className = "fa-solid fa-circle-check text-green-400 mr-2";
+            }
+            
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 3000);
+        }
+
+        // Tạo giao diện khung ảnh cho tất cả thành viên
+        function renderGrid() {
+            gridContainer.innerHTML = ''; // Clear cũ
+            membersData.forEach(member => {
+                // Ảnh mặc định
+                const defaultImage = `https://api.dicebear.com/7.x/notionists/svg?seed=${member.seed}&backgroundColor=${member.color}`;
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100";
+                card.innerHTML = `
+                    <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100" data-id="${member.id}">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                            <i class="fa-solid fa-spinner fa-spin text-2xl hidden loading-icon"></i>
+                        </div>
+                        <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10 bg-white">
+                        
+                        <!-- Overlay upload -->
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <div class="text-center">
+                                <i class="fa-solid fa-cloud-arrow-up text-white text-3xl mb-1"></i>
+                                <p class="text-white text-xs font-medium px-2">Đổi ảnh</p>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-800 text-center pb-1">${member.name}</h3>
+                `;
+                gridContainer.appendChild(card);
+            });
+
+            // Gắn sự kiện click cho các thẻ ảnh
+            attachClickEvents();
+        }
+
+        async function initApp() {
+            if (!firebaseConfig || firebaseConfig.apiKey === "dummy") {
+                renderGrid();
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+                showToast("Đang chạy offline (không lưu ảnh được)", true);
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Xác thực
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                currentUser = auth.currentUser;
+                
+                if (currentUser) {
+                    renderGrid();
+                    startSync(); // Bắt đầu lắng nghe dữ liệu từ server
+                }
+
+                // Ẩn màn hình loading
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+
+            } catch (error) {
+                console.error("Lỗi khởi tạo:", error);
+                showToast("Lỗi kết nối máy chủ", true);
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }
+
+        // Lắng nghe thay đổi ảnh từ Server
+        function startSync() {
+            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'members_avatars');
+            
+            onSnapshot(collectionRef, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added" || change.type === "modified") {
+                        const memberId = change.doc.id;
+                        const data = change.doc.data();
+                        const imgElement = document.getElementById(`img-${memberId}`);
+                        if (imgElement && data.imageUrl) {
+                            imgElement.src = data.imageUrl;
+                        }
+                    }
+                });
+            }, (error) => {
+                console.error("Lỗi đồng bộ:", error);
+            });
+        }
+
+        // Nén ảnh bằng Canvas trước khi gửi lên Server để tránh giới hạn dung lượng
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    // Cắt ảnh thành hình vuông và nén kích thước nhỏ (max 400x400)
+                    const MAX_SIZE = 400;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Tính toán crop vuông
+                    let minSize = Math.min(width, height);
+                    let sx = (width - minSize) / 2;
+                    let sy = (height - minSize) / 2;
+
+                    canvas.width = MAX_SIZE;
+                    canvas.height = MAX_SIZE;
+                    
+                    const ctx = canvas.getContext('2d');
+                    // Vẽ và thu phóng
+                    ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
+                    
+                    // Xuất ra chuẩn webp hoặc jpeg chất lượng thấp để nhẹ
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
+                    callback(dataUrl);
+                }
+            }
+        }
+
+        // Xử lý sự kiện tải ảnh
+        const imageUploader = document.getElementById('imageUploader');
+        let currentUploadingId = null;
+
+        function attachClickEvents() {
+            document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
+                wrapper.addEventListener('click', function() {
+                    if (!currentUser) {
+                        showToast("Đang kết nối lại, vui lòng thử lại sau giây lát...", true);
+                        return;
+                    }
+                    currentUploadingId = this.getAttribute('data-id');
+                    imageUploader.click();
+                });
+            });
+        }
+
+        imageUploader.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUploadingId || !currentUser) {
+                this.value = '';
+                return;
+            }
+
+            // Kiểm tra dung lượng file ban đầu (giới hạn 5MB cho chắc chắn)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("Vui lòng chọn ảnh dung lượng dưới 5MB", true);
+                this.value = '';
+                return;
+            }
+
+            const wrapper = document.querySelector(`.avatar-wrapper[data-id="${currentUploadingId}"]`);
+            const loadingIcon = wrapper.querySelector('.loading-icon');
+            const imgElement = wrapper.querySelector('img');
+
+            // Hiển thị trạng thái đang tải
+            loadingIcon.classList.remove('hidden');
+            imgElement.classList.add('opacity-50');
+
+            // Tiến hành nén ảnh và tải lên Firebase
+            compressImage(file, async (compressedBase64) => {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members_avatars', currentUploadingId);
+                    await setDoc(docRef, {
+                        imageUrl: compressedBase64,
+                        updatedAt: new Date().toISOString()
+                    });
+                    
+                    // Giao diện sẽ tự động cập nhật nhờ onSnapshot
+                    showToast("Đã cập nhật ảnh thành công!");
+                } catch (error) {
+                    console.error("Lỗi khi lưu ảnh:", error);
+                    showToast("Có lỗi xảy ra khi lưu ảnh. Có thể do ảnh quá nặng.", true);
+                } finally {
+                    // Tắt trạng thái đang tải
+                    loadingIcon.classList.add('hidden');
+                    imgElement.classList.remove('opacity-50');
+                    this.value = ''; // Reset input
+                }
+            });
+        });
+
+        // --- Tương tác khác ---
         document.getElementById('btnHeart').addEventListener('click', function(e) {
             const heart = document.createElement('i');
             heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
-            
             const rect = this.getBoundingClientRect();
             const offsetX = (Math.random() - 0.5) * 40;
             const startX = rect.left + (rect.width / 2) + offsetX;
             const startY = rect.top;
-            
             heart.style.left = startX + 'px';
             heart.style.top = startY + 'px';
-            
             const scale = Math.random() * 0.5 + 0.8;
             heart.style.transform = `scale(${scale})`;
-            
             document.body.appendChild(heart);
-            
-            setTimeout(() => {
-                heart.remove();
-            }, 2000);
+            setTimeout(() => heart.remove(), 2000);
         });
 
-        // --- CHỨC NĂNG UPLOAD ẢNH CÁ NHÂN ---
-        const imageUploader = document.getElementById('imageUploader');
-        let currentImageElement = null;
+        // Chạy khởi tạo
+        window.onload = initApp;
 
-        // Bắt sự kiện click vào các khung ảnh
-        document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
-            wrapper.addEventListener('click', function() {
-                // Lưu lại thẻ <img> đang được click
-                currentImageElement = this.querySelector('img');
-                // Kích hoạt nút chọn file ẩn
-                imageUploader.click();
-            });
-        });
-
-        // Xử lý khi người dùng đã chọn file ảnh xong
-        imageUploader.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && currentImageElement) {
-                // Sử dụng FileReader để đọc file ảnh từ máy tính thành URL
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    // Thay thế ảnh hiện tại bằng ảnh vừa tải lên
-                    currentImageElement.src = event.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-            // Reset input để có thể chọn lại cùng 1 file nếu cần
-            this.value = '';
-        });
     </script>
 </body>
 </html>
