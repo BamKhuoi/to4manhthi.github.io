@@ -119,6 +119,24 @@
             <!-- Render by JS -->
         </div>
 
+        <!-- Khoảnh khắc Tổ 4 -->
+        <div class="mt-16 bg-white/60 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-lg border border-white">
+            <h2 class="font-cursive text-4xl md:text-5xl text-primary mb-6 text-center">Khoảnh Khắc Của Chúng Ta</h2>
+            <div class="relative w-full max-w-4xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100 shadow-inner group cursor-pointer" id="group-photo-wrapper" title="Nhấn để đổi ảnh tập thể">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-400 z-10">
+                    <i id="group-loading-icon" class="fa-solid fa-spinner fa-spin text-4xl hidden"></i>
+                </div>
+                <!-- Ảnh mặc định tập thể -->
+                <img id="group-photo-img" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Khoảnh khắc tập thể Tổ 4" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 relative z-20 bg-white">
+                
+                <div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                    <i class="fa-solid fa-cloud-arrow-up text-white text-5xl mb-2"></i>
+                    <p class="text-white text-lg font-medium">Đổi ảnh tập thể Tổ 4</p>
+                </div>
+            </div>
+            <p class="text-center text-gray-500 mt-4 italic">"Một bức ảnh lưu giữ ngàn lời muốn nói..."</p>
+        </div>
+
         <!-- Lời nhắn nhủ chung -->
         <div class="mt-16 bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-md border border-white text-center">
             <h2 class="font-cursive text-4xl text-primary mb-4">Gửi trọn tình cảm...</h2>
@@ -297,10 +315,22 @@
                     showToast("Lỗi đồng bộ: " + error.message, true);
                 }
             });
+
+            // Lắng nghe dữ liệu Ảnh Tập Thể
+            const groupRef = ref(db, 'groupPhoto');
+            onValue(groupRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.imageUrl) {
+                    const groupImgElement = document.getElementById('group-photo-img');
+                    if (groupImgElement) {
+                        groupImgElement.src = data.imageUrl; // Cập nhật ảnh tập thể
+                    }
+                }
+            });
         }
 
         // Nén ảnh bằng Canvas
-        function compressImage(file, callback) {
+        function compressImage(file, type, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
@@ -308,19 +338,31 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 400; // Nén nhỏ lại
+                    const ctx = canvas.getContext('2d');
                     let width = img.width;
                     let height = img.height;
-                    
-                    let minSize = Math.min(width, height);
-                    let sx = (width - minSize) / 2;
-                    let sy = (height - minSize) / 2;
 
-                    canvas.width = MAX_SIZE;
-                    canvas.height = MAX_SIZE;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
+                    if (type === 'avatar') {
+                        // Nén ảnh đại diện: Cắt thành hình vuông 400x400
+                        const MAX_SIZE = 400; 
+                        let minSize = Math.min(width, height);
+                        let sx = (width - minSize) / 2;
+                        let sy = (height - minSize) / 2;
+
+                        canvas.width = MAX_SIZE;
+                        canvas.height = MAX_SIZE;
+                        ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
+                    } else {
+                        // Nén ảnh tập thể: Giữ nguyên tỷ lệ, thu nhỏ nếu chiều ngang lớn hơn 1200px
+                        const MAX_WIDTH = 1200;
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                    }
                     
                     // Nén ra base64 dạng JPEG chất lượng 60%
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
@@ -331,8 +373,10 @@
 
         const imageUploader = document.getElementById('imageUploader');
         let currentUploadingId = null;
+        let currentUploadType = 'avatar'; // Biến xác định đang up avatar hay ảnh tập thể
 
         function attachClickEvents() {
+            // Sự kiện cho từng thành viên
             document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
                 wrapper.addEventListener('click', function() {
                     if (!currentUser) {
@@ -340,14 +384,28 @@
                         return;
                     }
                     currentUploadingId = this.getAttribute('data-id');
+                    currentUploadType = 'avatar';
                     imageUploader.click();
                 });
             });
+
+            // Sự kiện cho ảnh tập thể
+            const groupWrapper = document.getElementById('group-photo-wrapper');
+            if (groupWrapper) {
+                groupWrapper.addEventListener('click', function() {
+                    if (!currentUser) {
+                        showToast("Chưa kết nối được với hệ thống lưu trữ.", true);
+                        return;
+                    }
+                    currentUploadType = 'group';
+                    imageUploader.click();
+                });
+            }
         }
 
         imageUploader.addEventListener('change', async function(e) {
             const file = e.target.files[0];
-            if (!file || !currentUploadingId || !currentUser) {
+            if (!file || !currentUser) {
                 this.value = '';
                 return;
             }
@@ -358,20 +416,35 @@
                 return;
             }
 
-            const wrapper = document.querySelector(`.avatar-wrapper[data-id="${currentUploadingId}"]`);
-            const loadingIcon = wrapper.querySelector('.loading-icon');
-            const imgElement = wrapper.querySelector('img');
+            let wrapper, loadingIcon, imgElement;
+
+            // Phân biệt UI loading giữa Avatar và Ảnh Tập thể
+            if (currentUploadType === 'avatar') {
+                wrapper = document.querySelector(`.avatar-wrapper[data-id="${currentUploadingId}"]`);
+                loadingIcon = wrapper.querySelector('.loading-icon');
+                imgElement = wrapper.querySelector('img');
+            } else {
+                wrapper = document.getElementById('group-photo-wrapper');
+                loadingIcon = document.getElementById('group-loading-icon');
+                imgElement = document.getElementById('group-photo-img');
+            }
 
             loadingIcon.classList.remove('hidden');
             imgElement.classList.add('opacity-50');
 
-            compressImage(file, async (compressedBase64) => {
+            compressImage(file, currentUploadType, async (compressedBase64) => {
                 try {
-                    // Tham chiếu chính xác đến ID của người dùng trong thư mục avatars
-                    const memberRef = ref(db, 'avatars/' + currentUploadingId);
+                    let targetRef;
+                    if (currentUploadType === 'avatar') {
+                        // Tham chiếu đến ID của thành viên
+                        targetRef = ref(db, 'avatars/' + currentUploadingId);
+                    } else {
+                        // Tham chiếu đến nhánh ảnh tập thể
+                        targetRef = ref(db, 'groupPhoto');
+                    }
                     
-                    // Lưu dữ liệu bằng lệnh set() của Realtime Database
-                    await set(memberRef, {
+                    // Lưu dữ liệu
+                    await set(targetRef, {
                         imageUrl: compressedBase64,
                         updatedAt: new Date().toISOString(),
                         uploaderId: currentUser.uid
