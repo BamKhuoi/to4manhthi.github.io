@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tri Ân Tổ 4 - Kỷ Niệm Khó Quên</title>
+    <title>Tổ 4 Mạnh Thí</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -150,12 +150,11 @@
     </div>
 
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- CẤU HÌNH DỮ LIỆU THÀNH VIÊN ---
+        // Mảng chứa thông tin cơ bản của các thành viên
         const membersData = [
             { id: 'ngocanh', name: 'Ngọc Anh', color: 'ffd5dc', seed: 'NgocAnh' },
             { id: 'thuong', name: 'Thương', color: 'b6e3f4', seed: 'Thuong' },
@@ -170,42 +169,41 @@
             { id: 'hoanglinh', name: 'Hoàng Linh', color: 'c1f0c1', seed: 'HoangLinh' }
         ];
 
-        // Môi trường Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to4-gallery-app';
-        let firebaseConfig = null;
-        try {
-            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                // Dummy config to prevent crash if running outside specific environment
-                apiKey: "dummy", authDomain: "dummy", projectId: "dummy"
-            };
-        } catch(e) { console.error("Firebase config error", e); }
+        // Lấy cấu hình Firebase từ biến môi trường (nếu có), nếu không dùng cấu hình mặc định (fallback)
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : JSON.stringify({
+            apiKey: "AIzaSyAzjBUv-dU6xoRsRZmuqERM2bodVFzpdnY",
+            authDomain: "luubut-b6820.firebaseapp.com",
+            projectId: "luubut-b6820",
+            storageBucket: "luubut-b6820.firebasestorage.app",
+            messagingSenderId: "672838556514",
+            appId: "1:672838556514:web:d670ec0b87a2fd8467aa3b"
+        });
         
+        const firebaseConfig = JSON.parse(firebaseConfigStr);
+        // Lấy App ID từ biến môi trường, bắt buộc phải dùng chuẩn này để lưu dữ liệu
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to4-memory-app';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
         let db, auth, currentUser;
         const gridContainer = document.getElementById('members-grid');
         const loader = document.getElementById('global-loader');
 
-        // Hàm hiển thị thông báo
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast-message');
             const icon = document.getElementById('toast-icon');
             const text = document.getElementById('toast-text');
             
             text.textContent = message;
-            if (isError) {
-                icon.className = "fa-solid fa-circle-exclamation text-red-400 mr-2";
-            } else {
-                icon.className = "fa-solid fa-circle-check text-green-400 mr-2";
-            }
+            icon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 mr-2" : "fa-solid fa-circle-check text-green-400 mr-2";
             
             toast.classList.remove('opacity-0');
             setTimeout(() => toast.classList.add('opacity-0'), 3000);
         }
 
-        // Tạo giao diện khung ảnh cho tất cả thành viên
+        // Tạo khung ảnh trống ban đầu
         function renderGrid() {
-            gridContainer.innerHTML = ''; // Clear cũ
+            gridContainer.innerHTML = ''; 
             membersData.forEach(member => {
-                // Ảnh mặc định
                 const defaultImage = `https://api.dicebear.com/7.x/notionists/svg?seed=${member.seed}&backgroundColor=${member.color}`;
                 
                 const card = document.createElement('div');
@@ -217,7 +215,6 @@
                         </div>
                         <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10 bg-white">
                         
-                        <!-- Overlay upload -->
                         <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                             <div class="text-center">
                                 <i class="fa-solid fa-cloud-arrow-up text-white text-3xl mb-1"></i>
@@ -230,28 +227,21 @@
                 gridContainer.appendChild(card);
             });
 
-            // Gắn sự kiện click cho các thẻ ảnh
             attachClickEvents();
         }
 
+        // Khởi tạo ứng dụng và kết nối CSDL
         async function initApp() {
-            if (!firebaseConfig || firebaseConfig.apiKey === "dummy") {
-                renderGrid();
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-                showToast("Đang chạy offline (không lưu ảnh được)", true);
-                return;
-            }
-
+            renderGrid();
+            
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Xác thực
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    await signInWithCustomToken(auth, token);
+                // QUAN TRỌNG: Quy tắc bảo mật số 3 - Bắt buộc dùng token nếu có
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
                 } else {
                     await signInAnonymously(auth);
                 }
@@ -259,24 +249,26 @@
                 currentUser = auth.currentUser;
                 
                 if (currentUser) {
-                    renderGrid();
-                    startSync(); // Bắt đầu lắng nghe dữ liệu từ server
+                    startSync(); // Lắng nghe thay đổi từ Firestore
+                } else {
+                    throw new Error("Không thể xác thực người dùng");
                 }
 
-                // Ẩn màn hình loading
+                // Ẩn loading
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
 
             } catch (error) {
-                console.error("Lỗi khởi tạo:", error);
-                showToast("Lỗi kết nối máy chủ", true);
+                console.error("Lỗi khởi tạo Firebase:", error);
+                showToast("Lỗi kết nối máy chủ. Vui lòng thử lại sau.", true);
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
             }
         }
 
-        // Lắng nghe thay đổi ảnh từ Server
+        // Lắng nghe dữ liệu (Public data)
         function startSync() {
+            // QUAN TRỌNG: Quy tắc bảo mật số 1 - Phải dùng đúng đường dẫn
             const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'members_avatars');
             
             onSnapshot(collectionRef, (snapshot) => {
@@ -286,16 +278,17 @@
                         const data = change.doc.data();
                         const imgElement = document.getElementById(`img-${memberId}`);
                         if (imgElement && data.imageUrl) {
-                            imgElement.src = data.imageUrl;
+                            imgElement.src = data.imageUrl; // Cập nhật ảnh thật
                         }
                     }
                 });
             }, (error) => {
-                console.error("Lỗi đồng bộ:", error);
+                console.error("Lỗi đồng bộ dữ liệu (onSnapshot):", error);
+                showToast("Không thể tải ảnh. Có lỗi đồng bộ.", true);
             });
         }
 
-        // Nén ảnh bằng Canvas trước khi gửi lên Server để tránh giới hạn dung lượng
+        // Nén ảnh bằng Canvas
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -304,12 +297,10 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    // Cắt ảnh thành hình vuông và nén kích thước nhỏ (max 400x400)
-                    const MAX_SIZE = 400;
+                    const MAX_SIZE = 400; // Nén nhỏ để web tải nhanh
                     let width = img.width;
                     let height = img.height;
                     
-                    // Tính toán crop vuông
                     let minSize = Math.min(width, height);
                     let sx = (width - minSize) / 2;
                     let sy = (height - minSize) / 2;
@@ -318,17 +309,14 @@
                     canvas.height = MAX_SIZE;
                     
                     const ctx = canvas.getContext('2d');
-                    // Vẽ và thu phóng
                     ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
                     
-                    // Xuất ra chuẩn webp hoặc jpeg chất lượng thấp để nhẹ
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
                     callback(dataUrl);
                 }
             }
         }
 
-        // Xử lý sự kiện tải ảnh
         const imageUploader = document.getElementById('imageUploader');
         let currentUploadingId = null;
 
@@ -336,7 +324,7 @@
             document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
                 wrapper.addEventListener('click', function() {
                     if (!currentUser) {
-                        showToast("Đang kết nối lại, vui lòng thử lại sau giây lát...", true);
+                        showToast("Chưa kết nối được với hệ thống lưu trữ.", true);
                         return;
                     }
                     currentUploadingId = this.getAttribute('data-id');
@@ -352,9 +340,8 @@
                 return;
             }
 
-            // Kiểm tra dung lượng file ban đầu (giới hạn 5MB cho chắc chắn)
             if (file.size > 5 * 1024 * 1024) {
-                showToast("Vui lòng chọn ảnh dung lượng dưới 5MB", true);
+                showToast("Vui lòng chọn ảnh dưới 5MB", true);
                 this.value = '';
                 return;
             }
@@ -363,34 +350,33 @@
             const loadingIcon = wrapper.querySelector('.loading-icon');
             const imgElement = wrapper.querySelector('img');
 
-            // Hiển thị trạng thái đang tải
             loadingIcon.classList.remove('hidden');
             imgElement.classList.add('opacity-50');
 
-            // Tiến hành nén ảnh và tải lên Firebase
             compressImage(file, async (compressedBase64) => {
                 try {
+                    // QUAN TRỌNG: Quy tắc bảo mật số 1 - Phải dùng đúng đường dẫn lưu
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members_avatars', currentUploadingId);
+                    
+                    // Lưu dữ liệu vào Cloud
                     await setDoc(docRef, {
                         imageUrl: compressedBase64,
-                        updatedAt: new Date().toISOString()
+                        updatedAt: new Date().toISOString(),
+                        uploaderId: currentUser.uid // Lưu lại ai là người up
                     });
                     
-                    // Giao diện sẽ tự động cập nhật nhờ onSnapshot
-                    showToast("Đã cập nhật ảnh thành công!");
+                    showToast("Đã lưu ảnh thành công!");
                 } catch (error) {
-                    console.error("Lỗi khi lưu ảnh:", error);
-                    showToast("Có lỗi xảy ra khi lưu ảnh. Có thể do ảnh quá nặng.", true);
+                    console.error("Lỗi khi lưu tài liệu lên Firestore:", error);
+                    showToast("Có lỗi xảy ra khi lưu ảnh.", true);
                 } finally {
-                    // Tắt trạng thái đang tải
                     loadingIcon.classList.add('hidden');
                     imgElement.classList.remove('opacity-50');
-                    this.value = ''; // Reset input
+                    this.value = '';
                 }
             });
         });
 
-        // --- Tương tác khác ---
         document.getElementById('btnHeart').addEventListener('click', function(e) {
             const heart = document.createElement('i');
             heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
@@ -406,7 +392,7 @@
             setTimeout(() => heart.remove(), 2000);
         });
 
-        // Chạy khởi tạo
+        // Bắt đầu ứng dụng
         window.onload = initApp;
 
     </script>
