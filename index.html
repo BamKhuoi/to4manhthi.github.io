@@ -38,13 +38,9 @@
             border-bottom-right-radius: 50% 10%;
         }
         
-        /* Hiệu ứng load ảnh */
-        .img-loading {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
+        /* Hiệu ứng load ảnh và slideshow */
+        .fade-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.5s ease;
         }
 
         /* Hiệu ứng thả tim bay lên */
@@ -86,6 +82,14 @@
         #global-loader {
             transition: opacity 0.5s ease;
         }
+
+        /* Hiệu ứng đĩa than xoay */
+        .spin-slow {
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="text-gray-800 antialiased font-sans">
@@ -105,8 +109,8 @@
             <p class="text-xl md:text-2xl font-medium mb-6 opacity-90 max-w-2xl mx-auto">
                 "Thanh xuân như một cơn mưa rào... Cảm ơn vì chúng ta đã cùng nhau che chung một chiếc ô mang tên Tổ 4."
             </p>
-            <div class="inline-block bg-white/20 backdrop-blur-md rounded-full px-5 py-2 text-sm text-white/90 border border-white/30">
-                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Chạm vào khung ảnh để cập nhật hình của bạn (Lưu online)
+            <div class="inline-block bg-white/20 backdrop-blur-md rounded-full px-5 py-2 text-sm text-white/90 border border-white/30 shadow-sm">
+                <i class="fa-solid fa-images mr-2"></i> Nhấn vào từng người để xem Album và thêm nhiều ảnh nhé!
             </div>
         </div>
     </header>
@@ -122,16 +126,14 @@
         <!-- Khoảnh khắc Tổ 4 -->
         <div class="mt-16 bg-white/60 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-lg border border-white">
             <h2 class="font-cursive text-4xl md:text-5xl text-primary mb-6 text-center">Khoảnh Khắc Của Chúng Ta</h2>
-            <div class="relative w-full max-w-4xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100 shadow-inner group cursor-pointer" id="group-photo-wrapper" title="Nhấn để đổi ảnh tập thể">
-                <div class="absolute inset-0 flex items-center justify-center text-gray-400 z-10">
-                    <i id="group-loading-icon" class="fa-solid fa-spinner fa-spin text-4xl hidden"></i>
-                </div>
+            
+            <div class="relative w-full max-w-4xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100 shadow-inner group cursor-pointer border border-gray-200" id="group-photo-wrapper" title="Nhấn để xem và thêm ảnh tập thể">
                 <!-- Ảnh mặc định tập thể -->
-                <img id="group-photo-img" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Khoảnh khắc tập thể Tổ 4" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 relative z-20 bg-white">
+                <img id="group-photo-img" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Khoảnh khắc tập thể Tổ 4" class="w-full h-full object-cover fade-transition group-hover:scale-105 relative z-20 bg-white">
                 
                 <div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-                    <i class="fa-solid fa-cloud-arrow-up text-white text-5xl mb-2"></i>
-                    <p class="text-white text-lg font-medium">Đổi ảnh tập thể Tổ 4</p>
+                    <i class="fa-solid fa-images text-white text-5xl mb-2"></i>
+                    <p class="text-white text-lg font-medium">Xem Album Tập Thể</p>
                 </div>
             </div>
             <p class="text-center text-gray-500 mt-4 italic">"Một bức ảnh lưu giữ ngàn lời muốn nói..."</p>
@@ -141,11 +143,10 @@
         <div class="mt-16 bg-white/60 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-md border border-white text-center">
             <h2 class="font-cursive text-4xl text-primary mb-4">Gửi trọn tình cảm...</h2>
             <p class="text-gray-600 leading-relaxed max-w-3xl mx-auto text-lg">
-                11 cá tính khác nhau nhưng khi ghép lại tạo thành một mảnh ghép hoàn hảo mang tên "Tổ 4". Mong rằng những tháng ngày gắn bó, những tiếng cười sẽ luôn là những kỷ niệm vô giá trong tim mỗi người.
+                11 cá tính khác nhau nhưng khi ghép lại tạo thành một mảnh ghép hoàn hảo mang tên "Tổ 4". Mong rằng những tháng ngày làm việc nhóm, những tiếng cười và cả những đêm thức trắng chạy deadline sẽ luôn là những kỷ niệm vô giá trong tim mỗi người.
             </p>
             <p class="mt-4 font-bold text-gray-800 text-xl">Mãi đỉnh Tổ 4 nhé! ❤️</p>
         </div>
-
     </main>
 
     <!-- Footer -->
@@ -158,22 +159,70 @@
         <i class="fa-solid fa-heart"></i>
     </button>
 
+    <!-- Nút Điều Khiển Nhạc Nền -->
+    <button id="music-toggle" class="fixed bottom-5 left-5 z-50 bg-white text-primary w-14 h-14 rounded-full flex items-center justify-center shadow-[0_4px_15px_rgba(255,126,95,0.3)] border border-orange-100 transition-transform hover:scale-110" title="Bật/Tắt Nhạc">
+        <i class="fa-solid fa-music text-xl"></i>
+    </button>
+
+    <!-- Thẻ Audio ẩn chứa nhạc nền -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=nostalgia-114680.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- Thẻ Input ẩn để xử lý việc chọn file ảnh -->
     <input type="file" id="imageUploader" accept="image/png, image/jpeg, image/jpg" class="hidden">
 
+    <!-- Modal Album -->
+    <div id="member-modal" class="fixed inset-0 bg-black/70 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col transform transition-transform duration-300 scale-95" id="modal-content">
+            <div class="p-5 md:p-6 border-b flex justify-between items-center bg-gray-50 rounded-t-3xl">
+                <div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-primary font-cursive" id="modal-title">Album</h3>
+                    <p class="text-sm text-gray-500">Nơi lưu giữ những khoảnh khắc đẹp nhất</p>
+                </div>
+                <button id="close-modal" class="text-gray-400 hover:text-red-500 text-3xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-4 md:p-6 overflow-y-auto flex-1 bg-white" id="modal-scroll-area">
+                <div id="modal-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
+                    <!-- Ảnh sẽ được render ở đây bằng JS -->
+                </div>
+            </div>
+            
+            <div class="p-4 md:p-6 border-t bg-gray-50 rounded-b-3xl flex justify-center shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-10 relative">
+                <button id="modal-upload-btn" class="bg-gradient-to-r from-primary to-secondary hover:from-orange-500 hover:to-orange-400 text-white px-8 py-3 rounded-full font-bold shadow-lg transition-transform active:scale-95 flex items-center text-lg">
+                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Thêm ảnh vào Album này
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chỉnh sửa Ghi chú -->
+    <div id="note-modal" class="fixed inset-0 bg-black/70 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95 flex flex-col shadow-2xl" id="note-modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-primary font-cursive">Ghi chú</h3>
+                <button id="close-note-modal" class="text-gray-400 hover:text-red-500 text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-sm text-gray-500 mb-3">Bạn đang viết cho <span id="note-member-name" class="font-bold text-gray-700"></span>:</p>
+            <textarea id="note-input" class="w-full border-2 border-orange-100 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-primary resize-none h-24 mb-4" placeholder="Ví dụ: Thánh ngủ gật, Trùm ăn vặt..."></textarea>
+            <button id="save-note-btn" class="bg-gradient-to-r from-primary to-secondary hover:from-orange-500 hover:to-orange-400 text-white w-full py-3 rounded-full font-bold shadow-lg transition-transform active:scale-95 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-check mr-2"></i> Lưu Ghi Chú
+            </button>
+        </div>
+    </div>
+
     <!-- Thông báo tùy chỉnh -->
-    <div id="toast-message" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 transition-opacity duration-300 opacity-0 pointer-events-none flex items-center">
+    <div id="toast-message" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center">
         <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 mr-2"></i>
         <span id="toast-text">Thành công!</span>
     </div>
 
     <script type="module">
-        // Import các thư viện dùng cho Realtime Database
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // Mảng chứa thông tin cơ bản của các thành viên
         const membersData = [
             { id: 'ngocanh', name: 'Ngọc Anh', color: 'ffd5dc', seed: 'NgocAnh' },
             { id: 'thuong', name: 'Thương', color: 'b6e3f4', seed: 'Thuong' },
@@ -188,54 +237,78 @@
             { id: 'hoanglinh', name: 'Hoàng Linh', color: 'c1f0c1', seed: 'HoangLinh' }
         ];
 
-        // Cấu hình Firebase của bạn
+        // Cấu hình Firebase Realtime Database mới
         const firebaseConfig = {
             apiKey: "AIzaSyBuzvjXec8SR_h3v8Zrrt5JEoJAsildSVM",
             authDomain: "to4manhthi.firebaseapp.com",
-            // QUAN TRỌNG: Bạn cần thêm dòng databaseURL này vào để Realtime Database hoạt động
             databaseURL: "https://to4manhthi-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "to4manhthi",
             storageBucket: "to4manhthi.firebasestorage.app",
             messagingSenderId: "368529734039",
-            appId: "1:368529734039:web:8f311653c72c08a27cacd2",
-            measurementId: "G-2RXMXNT8HE"
+            appId: "1:368529734039:web:8f311653c72c08a27cacd2"
         };
         
         let db, auth, currentUser;
+        let allMembersPhotos = {}; 
+        let allGroupPhotos = {}; // Lưu riêng ảnh tập thể
+        let currentModalMemberId = null; 
+        
+        // Theo dõi chỉ số ảnh đang hiển thị cho Slideshow
+        let photoIndexes = { 'group': 0 }; 
+
         const gridContainer = document.getElementById('members-grid');
         const loader = document.getElementById('global-loader');
+        const imageUploader = document.getElementById('imageUploader');
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast-message');
             const icon = document.getElementById('toast-icon');
             const text = document.getElementById('toast-text');
-            
             text.textContent = message;
             icon.className = isError ? "fa-solid fa-circle-exclamation text-red-400 mr-2" : "fa-solid fa-circle-check text-green-400 mr-2";
-            
             toast.classList.remove('opacity-0');
             setTimeout(() => toast.classList.add('opacity-0'), 3000);
         }
 
-        // Tạo khung ảnh trống ban đầu
+        function getPhotosArray(memberData) {
+            if (!memberData) return [];
+            let photos = [];
+            // Xử lý cả dạng dữ liệu cũ (1 ảnh) và mới (danh sách)
+            if (memberData.imageUrl && typeof memberData.imageUrl === 'string') {
+                 photos.push({ imageUrl: memberData.imageUrl, timestamp: 0 });
+            }
+            for (const key in memberData) {
+                if (typeof memberData[key] === 'object' && memberData[key].imageUrl) {
+                    photos.push(memberData[key]);
+                }
+            }
+            return photos.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        }
+
         function renderGrid() {
             gridContainer.innerHTML = ''; 
             membersData.forEach(member => {
                 const defaultImage = `https://api.dicebear.com/7.x/notionists/svg?seed=${member.seed}&backgroundColor=${member.color}`;
-                
+                photoIndexes[member.id] = 0; // Khởi tạo chỉ số trình chiếu
+
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100";
+                card.className = "bg-white rounded-2xl p-3 shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border border-gray-100 relative mt-6";
                 card.innerHTML = `
-                    <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100" data-id="${member.id}">
-                        <div class="absolute inset-0 flex items-center justify-center text-gray-300 z-10">
-                            <i class="fa-solid fa-spinner fa-spin text-2xl hidden loading-icon"></i>
+                    <!-- Bong bóng ghi chú trên đầu -->
+                    <div class="note-wrapper absolute -top-5 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.1)] border border-orange-100 z-40 group/note cursor-pointer w-11/12 text-center transition-transform hover:scale-105" data-note-id="${member.id}" data-name="${member.name}" title="Sửa ghi chú">
+                        <p id="note-text-${member.id}" class="text-[11px] md:text-xs text-gray-400 font-medium italic line-clamp-2 leading-tight break-words">✎ Ghi chú...</p>
+                        <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white rotate-45 border-b border-r border-orange-100"></div>
+                        <div class="absolute -right-1.5 -top-1.5 bg-primary text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover/note:opacity-100 transition-opacity shadow-sm">
+                            <i class="fa-solid fa-pen text-[10px]"></i>
                         </div>
-                        <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-20 bg-white">
-                        
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                    </div>
+
+                    <div class="avatar-wrapper relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100" data-id="${member.id}" data-name="${member.name}">
+                        <img id="img-${member.id}" src="${defaultImage}" alt="${member.name}" class="w-full h-full object-cover fade-transition group-hover:scale-110 relative z-20 bg-white">
+                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
                             <div class="text-center">
-                                <i class="fa-solid fa-cloud-arrow-up text-white text-3xl mb-1"></i>
-                                <p class="text-white text-xs font-medium px-2">Đổi ảnh</p>
+                                <i class="fa-solid fa-images text-white text-3xl mb-1"></i>
+                                <p class="text-white text-sm font-medium px-2">Xem Album</p>
                             </div>
                         </div>
                     </div>
@@ -243,93 +316,233 @@
                 `;
                 gridContainer.appendChild(card);
             });
-
             attachClickEvents();
         }
 
-        // Khởi tạo ứng dụng và kết nối Realtime Database
         async function initApp() {
             renderGrid();
-            
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                // Khởi tạo Realtime Database thay vì Firestore
                 db = getDatabase(app);
-
-                // Đăng nhập ẩn danh
+                
                 await signInAnonymously(auth);
                 currentUser = auth.currentUser;
                 
                 if (currentUser) {
-                    startSync(); // Lắng nghe thay đổi
+                    startSync();
+                    startSlideshow(); // Kích hoạt Slideshow tự động đổi ảnh
                 }
-
-                // Ẩn loading
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
-
             } catch (error) {
-                console.error("Lỗi khởi tạo Firebase:", error);
-                
-                let errorMsg = error.message;
-                if(error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-                    errorMsg = "Chưa bật chế độ Đăng nhập Ẩn danh (Anonymous) trong Authentication.";
-                }
-
+                console.error("Lỗi:", error);
                 loader.innerHTML = `
                     <div class="text-center p-6 bg-white rounded-xl shadow-xl max-w-md mx-4 border-t-4 border-red-500">
-                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-                        <p class="text-gray-800 font-bold text-xl mb-2">Đã xảy ra lỗi kết nối!</p>
-                        <p class="text-gray-600 text-sm break-words">${errorMsg}</p>
-                        <button onclick="location.reload()" class="mt-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-100 transition-colors">Tải lại trang</button>
+                        <p class="text-gray-800 font-bold text-xl mb-2">Lỗi kết nối!</p>
+                        <p class="text-gray-600 text-sm break-words">${error.message}</p>
                     </div>`;
             }
         }
 
-        // Lắng nghe dữ liệu (Realtime)
         function startSync() {
-            // Tham chiếu đến nhánh 'avatars' trong Realtime Database
+            // Lắng nghe dữ liệu Album Cá nhân
             const avatarsRef = ref(db, 'avatars');
-            
-            // onValue sẽ tự động chạy mỗi khi có dữ liệu mới trên server
             onValue(avatarsRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Lặp qua tất cả dữ liệu lấy về
-                    for (const memberId in data) {
-                        if (data.hasOwnProperty(memberId)) {
-                            const imgData = data[memberId];
-                            const imgElement = document.getElementById(`img-${memberId}`);
-                            if (imgElement && imgData.imageUrl) {
-                                imgElement.src = imgData.imageUrl; // Cập nhật ảnh thật lên giao diện
-                            }
+                allMembersPhotos = snapshot.val() || {};
+                
+                membersData.forEach(member => {
+                    const imgElement = document.getElementById(`img-${member.id}`);
+                    if (imgElement) {
+                        const photos = getPhotosArray(allMembersPhotos[member.id]);
+                        if (photos.length > 0) {
+                            // Reset về ảnh mới nhất mỗi khi có người up thêm
+                            imgElement.src = photos[0].imageUrl;
+                            photoIndexes[member.id] = 0;
                         }
                     }
-                }
-            }, (error) => {
-                console.error("Lỗi khi đọc dữ liệu:", error);
-                if(error.message.includes("permission_denied")) {
-                    showToast("Lỗi: Hãy đổi file Rules của Realtime Database thành true.", true);
-                } else {
-                    showToast("Lỗi đồng bộ: " + error.message, true);
-                }
+                });
+                if (currentModalMemberId && currentModalMemberId !== 'group') renderModalGallery();
             });
 
-            // Lắng nghe dữ liệu Ảnh Tập Thể
+            // Lắng nghe dữ liệu Album Tập Thể (dùng groupPhoto cho tương thích cũ)
             const groupRef = ref(db, 'groupPhoto');
             onValue(groupRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.imageUrl) {
+                allGroupPhotos = snapshot.val() || {};
+                const gPhotos = getPhotosArray(allGroupPhotos);
+                if (gPhotos.length > 0) {
                     const groupImgElement = document.getElementById('group-photo-img');
                     if (groupImgElement) {
-                        groupImgElement.src = data.imageUrl; // Cập nhật ảnh tập thể
+                        groupImgElement.src = gPhotos[0].imageUrl;
+                        photoIndexes['group'] = 0;
                     }
                 }
+                if (currentModalMemberId === 'group') renderModalGallery();
+            });
+
+            // Lắng nghe dữ liệu Ghi chú
+            const notesRef = ref(db, 'notes');
+            onValue(notesRef, (snapshot) => {
+                const notes = snapshot.val() || {};
+                membersData.forEach(member => {
+                    const noteEl = document.getElementById(`note-text-${member.id}`);
+                    if (noteEl) {
+                        const text = notes[member.id] ? notes[member.id].text : "✎ Ghi chú...";
+                        noteEl.textContent = text;
+                        if (notes[member.id]) {
+                            noteEl.classList.add('text-primary');
+                            noteEl.classList.remove('text-gray-400');
+                        } else {
+                            noteEl.classList.remove('text-primary');
+                            noteEl.classList.add('text-gray-400');
+                        }
+                    }
+                });
             });
         }
 
-        // Nén ảnh bằng Canvas
+        function changeImgSrcSmooth(imgEl, newSrc) {
+            if(imgEl.src === newSrc) return;
+            // Làm mờ ảnh cũ
+            imgEl.style.opacity = '0.5';
+            
+            // Đợi tải ảnh mới xong thì đổi và làm rõ lại
+            const temp = new Image();
+            temp.onload = () => {
+                imgEl.src = newSrc;
+                imgEl.style.opacity = '1';
+            };
+            temp.src = newSrc;
+        }
+
+        function startSlideshow() {
+            // Chạy mỗi 5 giây
+            setInterval(() => {
+                // 1. Chuyển ảnh Cá nhân
+                membersData.forEach(member => {
+                    const photos = getPhotosArray(allMembersPhotos[member.id]);
+                    if (photos.length > 1) {
+                        // Tăng index, nếu quá số lượng thì quay về 0
+                        photoIndexes[member.id] = (photoIndexes[member.id] + 1) % photos.length;
+                        const img = document.getElementById(`img-${member.id}`);
+                        if (img) changeImgSrcSmooth(img, photos[photoIndexes[member.id]].imageUrl);
+                    }
+                });
+
+                // 2. Chuyển ảnh Tập thể
+                const gPhotos = getPhotosArray(allGroupPhotos);
+                if (gPhotos.length > 1) {
+                    photoIndexes['group'] = (photoIndexes['group'] + 1) % gPhotos.length;
+                    const gImg = document.getElementById('group-photo-img');
+                    if (gImg) changeImgSrcSmooth(gImg, gPhotos[photoIndexes['group']].imageUrl);
+                }
+            }, 5000);
+        }
+
+        function renderModalGallery() {
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
+            
+            let photos = [];
+            let defaultImage = '';
+
+            if (currentModalMemberId === 'group') {
+                photos = getPhotosArray(allGroupPhotos);
+                defaultImage = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+            } else {
+                const member = membersData.find(m => m.id === currentModalMemberId);
+                photos = getPhotosArray(allMembersPhotos[currentModalMemberId]);
+                defaultImage = `https://api.dicebear.com/7.x/notionists/svg?seed=${member.seed}&backgroundColor=${member.color}`;
+            }
+
+            if (photos.length === 0) {
+                gallery.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
+                        <img src="${defaultImage}" class="w-24 h-24 rounded-full mb-4 opacity-50 grayscale border-4 border-gray-100 shadow-sm object-cover">
+                        <p class="text-xl font-medium text-gray-500 mb-1">Album đang trống</p>
+                        <p class="text-sm">Hãy là người đầu tiên tải ảnh lên nhé!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            photos.forEach(photo => {
+                const div = document.createElement('div');
+                div.className = "aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-sm relative group border border-gray-200";
+                div.innerHTML = `
+                    <a href="${photo.imageUrl}" target="_blank" title="Mở ảnh lớn">
+                        <img src="${photo.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 bg-white">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </a>
+                `;
+                gallery.appendChild(div);
+            });
+        }
+
+        function openModal(memberId, memberName) {
+            currentModalMemberId = memberId;
+            document.getElementById('modal-title').textContent = `Album của ${memberName}`;
+            renderModalGallery();
+            
+            const modal = document.getElementById('member-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('member-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentModalMemberId = null;
+            }, 300);
+        }
+
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+        document.getElementById('member-modal').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('member-modal')) closeModal();
+        });
+
+        document.getElementById('modal-upload-btn').addEventListener('click', () => {
+            if (!currentUser) return showToast("Chưa kết nối hệ thống.", true);
+            imageUploader.click(); 
+        });
+
+        function attachClickEvents() {
+            document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
+                wrapper.addEventListener('click', function(e) {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    openModal(id, name);
+                });
+            });
+
+            document.querySelectorAll('.note-wrapper').forEach(wrapper => {
+                wrapper.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.getAttribute('data-note-id');
+                    const name = this.getAttribute('data-name');
+                    openNoteModal(id, name);
+                });
+            });
+
+            // Mở Album cho Tập Thể
+            const groupWrapper = document.getElementById('group-photo-wrapper');
+            if (groupWrapper) {
+                groupWrapper.addEventListener('click', function() {
+                    openModal('group', 'Tập Thể Tổ 4');
+                });
+            }
+        }
+
         function compressImage(file, type, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -342,73 +555,40 @@
                     let width = img.width;
                     let height = img.height;
 
-                    if (type === 'avatar') {
-                        // Nén ảnh đại diện: Cắt thành hình vuông 400x400
-                        const MAX_SIZE = 400; 
-                        let minSize = Math.min(width, height);
-                        let sx = (width - minSize) / 2;
-                        let sy = (height - minSize) / 2;
-
-                        canvas.width = MAX_SIZE;
-                        canvas.height = MAX_SIZE;
-                        ctx.drawImage(img, sx, sy, minSize, minSize, 0, 0, MAX_SIZE, MAX_SIZE);
-                    } else {
-                        // Nén ảnh tập thể: Giữ nguyên tỷ lệ, thu nhỏ nếu chiều ngang lớn hơn 1200px
-                        const MAX_WIDTH = 1200;
-                        if (width > MAX_WIDTH) {
-                            height = Math.round((height * MAX_WIDTH) / width);
-                            width = MAX_WIDTH;
+                    const MAX_SIZE = type === 'group' ? 1200 : 800; 
+                    if (width > MAX_SIZE || height > MAX_SIZE) {
+                        if (width > height) {
+                            height = Math.round((height * MAX_SIZE) / width);
+                            width = MAX_SIZE;
+                        } else {
+                            width = Math.round((width * MAX_SIZE) / height);
+                            height = MAX_SIZE;
                         }
+                    }
+                    
+                    // Nếu là ảnh cá nhân thì cố gắng cắt vuông, nếu không thì giữ tỷ lệ
+                    if (type === 'avatar') {
+                        const size = Math.min(width, height);
+                        canvas.width = size;
+                        canvas.height = size;
+                        const offsetX = (width - size) / 2;
+                        const offsetY = (height - size) / 2;
+                        ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size);
+                    } else {
                         canvas.width = width;
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
                     }
                     
-                    // Nén ra base64 dạng JPEG chất lượng 60%
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8); 
                     callback(dataUrl);
                 }
             }
         }
 
-        const imageUploader = document.getElementById('imageUploader');
-        let currentUploadingId = null;
-        let currentUploadType = 'avatar'; // Biến xác định đang up avatar hay ảnh tập thể
-
-        function attachClickEvents() {
-            // Sự kiện cho từng thành viên
-            document.querySelectorAll('.avatar-wrapper').forEach(wrapper => {
-                wrapper.addEventListener('click', function() {
-                    if (!currentUser) {
-                        showToast("Chưa kết nối được với hệ thống lưu trữ.", true);
-                        return;
-                    }
-                    currentUploadingId = this.getAttribute('data-id');
-                    currentUploadType = 'avatar';
-                    imageUploader.click();
-                });
-            });
-
-            // Sự kiện cho ảnh tập thể
-            const groupWrapper = document.getElementById('group-photo-wrapper');
-            if (groupWrapper) {
-                groupWrapper.addEventListener('click', function() {
-                    if (!currentUser) {
-                        showToast("Chưa kết nối được với hệ thống lưu trữ.", true);
-                        return;
-                    }
-                    currentUploadType = 'group';
-                    imageUploader.click();
-                });
-            }
-        }
-
         imageUploader.addEventListener('change', async function(e) {
             const file = e.target.files[0];
-            if (!file || !currentUser) {
-                this.value = '';
-                return;
-            }
+            if (!file || !currentUser) { this.value = ''; return; }
 
             if (file.size > 5 * 1024 * 1024) {
                 showToast("Vui lòng chọn ảnh dưới 5MB", true);
@@ -416,68 +596,131 @@
                 return;
             }
 
-            let wrapper, loadingIcon, imgElement;
+            const modalBtn = document.getElementById('modal-upload-btn');
+            const originalBtnHTML = modalBtn.innerHTML;
+            modalBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải lên...';
+            modalBtn.disabled = true;
 
-            // Phân biệt UI loading giữa Avatar và Ảnh Tập thể
-            if (currentUploadType === 'avatar') {
-                wrapper = document.querySelector(`.avatar-wrapper[data-id="${currentUploadingId}"]`);
-                loadingIcon = wrapper.querySelector('.loading-icon');
-                imgElement = wrapper.querySelector('img');
-            } else {
-                wrapper = document.getElementById('group-photo-wrapper');
-                loadingIcon = document.getElementById('group-loading-icon');
-                imgElement = document.getElementById('group-photo-img');
-            }
+            const isGroup = currentModalMemberId === 'group';
 
-            loadingIcon.classList.remove('hidden');
-            imgElement.classList.add('opacity-50');
-
-            compressImage(file, currentUploadType, async (compressedBase64) => {
+            compressImage(file, isGroup ? 'group' : 'avatar', async (compressedBase64) => {
                 try {
-                    let targetRef;
-                    if (currentUploadType === 'avatar') {
-                        // Tham chiếu đến ID của thành viên
-                        targetRef = ref(db, 'avatars/' + currentUploadingId);
-                    } else {
-                        // Tham chiếu đến nhánh ảnh tập thể
-                        targetRef = ref(db, 'groupPhoto');
-                    }
+                    // Dùng push để thêm mới vào danh sách (dù là cá nhân hay tập thể)
+                    const refPath = isGroup ? 'groupPhoto' : ('avatars/' + currentModalMemberId);
+                    const newPhotoRef = push(ref(db, refPath));
                     
-                    // Lưu dữ liệu
-                    await set(targetRef, {
+                    await set(newPhotoRef, {
                         imageUrl: compressedBase64,
-                        updatedAt: new Date().toISOString(),
+                        timestamp: Date.now(),
                         uploaderId: currentUser.uid
                     });
                     
-                    showToast("Đã lưu ảnh thành công!");
+                    showToast("Đã thêm ảnh vào Album!");
+                    document.getElementById('modal-scroll-area').scrollTop = 0;
                 } catch (error) {
-                    console.error("Lỗi khi lưu ảnh:", error);
-                    showToast("Có lỗi xảy ra: " + error.message, true);
+                    showToast("Lỗi: " + error.message, true);
                 } finally {
-                    loadingIcon.classList.add('hidden');
-                    imgElement.classList.remove('opacity-50');
-                    this.value = '';
+                    modalBtn.innerHTML = originalBtnHTML;
+                    modalBtn.disabled = false;
+                    imageUploader.value = '';
                 }
             });
         });
 
-        document.getElementById('btnHeart').addEventListener('click', function(e) {
-            const heart = document.createElement('i');
-            heart.classList.add('fa-solid', 'fa-heart', 'floating-heart');
-            const rect = this.getBoundingClientRect();
-            const offsetX = (Math.random() - 0.5) * 40;
-            const startX = rect.left + (rect.width / 2) + offsetX;
-            const startY = rect.top;
-            heart.style.left = startX + 'px';
-            heart.style.top = startY + 'px';
-            const scale = Math.random() * 0.5 + 0.8;
-            heart.style.transform = `scale(${scale})`;
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 2000);
+        let currentNoteMemberId = null;
+
+        function openNoteModal(id, name) {
+            currentNoteMemberId = id;
+            document.getElementById('note-member-name').textContent = name;
+            const currentText = document.getElementById(`note-text-${id}`).textContent;
+            document.getElementById('note-input').value = currentText === "✎ Ghi chú..." ? "" : currentText;
+            
+            const modal = document.getElementById('note-modal');
+            const content = document.getElementById('note-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                document.getElementById('note-input').focus();
+            }, 10);
+        }
+
+        function closeNoteModal() {
+            const modal = document.getElementById('note-modal');
+            const content = document.getElementById('note-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentNoteMemberId = null;
+            }, 300);
+        }
+
+        document.getElementById('close-note-modal').addEventListener('click', closeNoteModal);
+        document.getElementById('note-modal').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('note-modal')) closeNoteModal();
         });
 
-        // Bắt đầu ứng dụng
+        document.getElementById('save-note-btn').addEventListener('click', async () => {
+            if (!currentUser) return showToast("Chưa kết nối hệ thống.", true);
+            const text = document.getElementById('note-input').value.trim();
+            const btn = document.getElementById('save-note-btn');
+            
+            if (text.length > 60) return showToast("Ghi chú quá dài! Tối đa 60 ký tự.", true);
+
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang lưu...';
+            btn.disabled = true;
+
+            try {
+                const noteRef = ref(db, 'notes/' + currentNoteMemberId);
+                if (text === "") {
+                    await set(noteRef, null); 
+                } else {
+                    await set(noteRef, { text: text, timestamp: Date.now() });
+                }
+                showToast("Đã lưu ghi chú!");
+                closeNoteModal();
+            } catch (error) {
+                showToast("Lỗi: " + error.message, true);
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        });
+
+        // --- NHẠC NỀN ---
+        const musicToggle = document.getElementById('music-toggle');
+        const bgMusic = document.getElementById('bg-music');
+        let isPlaying = false;
+
+        const startMusicInteraction = () => {
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicToggle.innerHTML = '<i class="fa-solid fa-compact-disc text-2xl spin-slow"></i>';
+                }).catch((e) => {
+                    console.log("Trình duyệt tạm thời chặn phát nhạc.");
+                });
+            }
+            document.removeEventListener('click', startMusicInteraction);
+        };
+        document.addEventListener('click', startMusicInteraction);
+
+        musicToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            if (isPlaying) {
+                bgMusic.pause();
+                isPlaying = false;
+                musicToggle.innerHTML = '<i class="fa-solid fa-music text-xl"></i>';
+            } else {
+                bgMusic.play();
+                isPlaying = true;
+                musicToggle.innerHTML = '<i class="fa-solid fa-compact-disc text-2xl spin-slow"></i>';
+            }
+        });
+
+        // Khởi chạy ứng dụng
         window.onload = initApp;
 
     </script>
